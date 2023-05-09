@@ -1,0 +1,49 @@
+char* strdup_new(const char* str)
+{
+    if (str == NULL) {
+        return NULL;
+    }
+    
+    size_t len = std::strlen(str) + 1;
+    char* new_str = new char[len];
+    std::memcpy(new_str, str, len);
+    return (new_str);
+}
+
+int Cgi::InitEnvTab(void)
+{
+    std::map<std::string, std::string>::iterator it;
+	
+	this->_env_cgi = new char *[this->_map_cgi_env.size() + 1];
+	if (!this->_env_cgi)
+		return (-1);
+	int i = 0;
+	it = this->_map_cgi_env.begin();
+	while (i < (int)this->_map_cgi_env.size())
+	{
+		std::string tmp = it->first + "=" + it->second + '\0';
+		this->_env_cgi[i] = strdup_new((char*)tmp.c_str());
+		if (this->_env_cgi[i] == NULL)
+			return (-1);
+		i++;
+		++it;
+	}
+	this->_env_cgi[i] = NULL;
+	return (0);	
+}
+
+void Cgi::ClearArray(void)
+{
+    int i = 0;
+    if (this->_env_cgi)
+    {
+        while (this->_env_cgi[i])
+        {
+            delete[] this->_env_cgi[i];
+            i++;
+        }
+        delete[] this->_env_cgi;
+        this->_env_cgi = 0;
+    }
+}
+
